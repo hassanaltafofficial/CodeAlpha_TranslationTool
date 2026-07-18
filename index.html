@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rubix Language Translator</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Tailwind Config for Dark Mode -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .dark ::-webkit-scrollbar-thumb { background: #475569; }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+  <!-- Header -->
+  <header class="w-full border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-40 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      
+      <!-- Left Side: Logo & Title -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-violet-500 flex items-center justify-center text-white shadow-md">
+          <span class="font-black text-sm tracking-widest">RLT</span>
+        </div>
+        <span class="font-extrabold text-xl bg-gradient-to-r from-slate-900 to-indigo-900 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">Rubix Language Translator</span>
+      </div>
+
+      <!-- Right Side: Theme Toggle Button -->
+      <button id="btn-theme" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+        <i class="fa-solid fa-moon dark:hidden"></i>
+        <i class="fa-solid fa-sun hidden dark:inline"></i>
+      </button>
+
+    </div>
+  </header>
+    
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
+    
+    <!-- Controls -->
+    <div class="flex items-center justify-between mb-4 bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors duration-300">
+      <div class="flex items-center space-x-4 text-sm font-medium">
+        <label class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="toggle-auto-translate" checked class="sr-only peer">
+          <div class="relative w-9 h-5 bg-slate-300 dark:bg-slate-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+          <span class="ms-2">Auto-translate</span>
+        </label>
+      </div>
+      <button id="btn-clear-all" class="text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 font-bold transition flex items-center space-x-1">
+        <i class="fa-solid fa-trash-can"></i> <span>Clear All</span>
+      </button>
+    </div>
+
+    <!-- Grid Panels -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      
+      <!-- LEFT: Input -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg p-5 flex flex-col justify-between transition-colors duration-300">
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-700">
+          <div class="flex items-center space-x-2 w-full">
+            <span class="text-xs uppercase font-bold text-slate-400">From</span>
+            <select id="select-source-lang" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white font-semibold text-sm rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-colors">
+                <option value="auto">✨ Auto-Detect Language</option>
+                <option value="en" selected>🇺🇸 English</option>
+                <option value="es">🇪🇸 Spanish</option>
+                <option value="fr">🇫🇷 French</option>
+                <option value="ur">🇵🇰 Urdu</option>
+                <option value="ar">🇸🇦 Arabic</option>
+            </select>
+          </div>
+        </div>
+
+        <textarea id="input-text" placeholder="Type text or paste content..." class="w-full flex-grow min-h-[200px] bg-transparent border-0 resize-none focus:outline-none text-slate-800 dark:text-slate-100 text-lg leading-relaxed placeholder:text-slate-400 dark:placeholder:text-slate-500 p-1"></textarea>
+
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-end">
+          <button id="btn-translate-manual" class="hidden px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-blue-600 text-white font-semibold text-sm transition active:scale-95">
+            <i class="fa-solid fa-arrow-right mr-1.5"></i>Translate
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Output -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg p-5 flex flex-col justify-between relative transition-colors duration-300">
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-700">
+          <div class="flex items-center space-x-2 w-full">
+            <span class="text-xs uppercase font-bold text-slate-400">To</span>
+            <select id="select-target-lang" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white font-semibold text-sm rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-colors">
+                <option value="ur" selected>🇵🇰 Urdu</option>
+                <option value="es">🇪🇸 Spanish</option>
+                <option value="en">🇺🇸 English</option>
+                <option value="fr">🇫🇷 French</option>
+                <option value="ar">🇸🇦 Arabic</option>
+            </select>
+          </div>
+        </div>
+
+        <textarea id="output-text" readonly placeholder="Translation will appear here instantly..." class="w-full flex-grow min-h-[200px] bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl resize-none focus:outline-none text-slate-800 dark:text-slate-100 text-lg leading-relaxed p-3 transition-colors"></textarea>
+
+        <!-- Loader Overlay -->
+        <div id="loader-overlay" class="hidden absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-center rounded-2xl z-10 transition-colors">
+            <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <button id="btn-speak" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium text-sm transition flex items-center space-x-2 border border-slate-200 dark:border-slate-600">
+            <i class="fa-solid fa-volume-high"></i> <span>Listen</span>
+          </button>
+
+          <button id="btn-copy" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-emerald-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium text-sm transition flex items-center space-x-2 border border-slate-200 dark:border-slate-600">
+            <i class="fa-regular fa-copy"></i> <span>Copy Output</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    const DOM = {
+        htmlElement: document.documentElement,
+        btnTheme: document.getElementById('btn-theme'),
+        inputText: document.getElementById('input-text'),
+        outputText: document.getElementById('output-text'),
+        sourceLang: document.getElementById('select-source-lang'),
+        targetLang: document.getElementById('select-target-lang'),
+        btnManual: document.getElementById('btn-translate-manual'),
+        btnClear: document.getElementById('btn-clear-all'),
+        btnCopy: document.getElementById('btn-copy'),
+        btnSpeak: document.getElementById('btn-speak'),
+        toggleAuto: document.getElementById('toggle-auto-translate'),
+        loader: document.getElementById('loader-overlay'),
+        toastContainer: document.getElementById('toast-container')
+    };
+
+    let debounceTimer;
+    let isAutoTranslate = true;
+
+    // --- Theme System ---
+    // Load saved preference from localStorage
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        DOM.htmlElement.classList.add('dark');
+    } else {
+        DOM.htmlElement.classList.remove('dark');
+    }
+
+    // Toggle button click logic
+    DOM.btnTheme.addEventListener('click', () => {
+        DOM.htmlElement.classList.toggle('dark');
+        if (DOM.htmlElement.classList.contains('dark')) {
+            localStorage.setItem('theme', 'dark');
+            showToast('Dark Mode Enabled', 'info');
+        } else {
+            localStorage.setItem('theme', 'light');
+            showToast('Light Mode Enabled', 'info');
+        }
+    });
+
+    // --- Toast Notification System ---
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg text-slate-800 dark:text-slate-100 text-xs font-bold flex items-center space-x-2 pointer-events-auto transition-opacity`;
+        toast.innerHTML = `<i class="fa-solid fa-circle-check text-blue-500"></i> <span>${message}</span>`;
+        DOM.toastContainer.appendChild(toast);
+        setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    // --- Text to Speech System ---
+    function speakText() {
+        const text = DOM.outputText.value.trim();
+        if(!text) {
+            showToast('Nothing to read!', 'error');
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const langMap = { 'en': 'en-US', 'es': 'es-ES', 'fr': 'fr-FR', 'ur': 'ur-PK', 'ar': 'ar-SA' };
+        utterance.lang = langMap[DOM.targetLang.value] || DOM.targetLang.value;
+
+        utterance.onerror = (e) => {
+            console.error("TTS Error:", e);
+            showToast('Audio fail: Voice missing in OS.', 'error');
+        };
+
+        window.speechSynthesis.speak(utterance);
+        showToast('Playing audio...', 'info');
+    }
+
+    // --- Translation API Call ---
+    async function translateProcess() {
+        const text = DOM.inputText.value.trim();
+        if (!text) {
+            DOM.outputText.value = '';
+            return;
+        }
+
+        DOM.loader.classList.remove('hidden');
+        try {
+            const response = await fetch("http://127.0.0.1:8000/translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    text: text,
+                    source_lang: DOM.sourceLang.value,
+                    target_lang: DOM.targetLang.value
+                })
+            });
+
+            if (!response.ok) throw new Error("Backend connection failed");
+            
+            const data = await response.json();
+            if (data.status === "success") {
+                DOM.outputText.value = data.translated_text;
+            } else {
+                throw new Error("Translation logic failed");
+            }
+        } catch (error) {
+            console.error(error);
+            showToast("Error connecting to Python backend! Check Uvicorn.", "error");
+        } finally {
+            DOM.loader.classList.add('hidden');
+        }
+    }
+
+    // --- Event Listeners ---
+    DOM.inputText.addEventListener('input', () => {
+        if (isAutoTranslate) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(translateProcess, 600);
+        }
+    });
+
+    DOM.sourceLang.addEventListener('change', translateProcess);
+    DOM.targetLang.addEventListener('change', translateProcess);
+    DOM.btnManual.addEventListener('click', translateProcess);
+
+    DOM.toggleAuto.addEventListener('change', (e) => {
+        isAutoTranslate = e.target.checked;
+        DOM.btnManual.classList.toggle('hidden', isAutoTranslate);
+    });
+
+    DOM.btnClear.addEventListener('click', () => {
+        DOM.inputText.value = '';
+        DOM.outputText.value = '';
+        showToast('Text cleared', 'info');
+    });
+
+    DOM.btnCopy.addEventListener('click', () => {
+        if (!DOM.outputText.value) return showToast('Nothing to copy!', 'error');
+        navigator.clipboard.writeText(DOM.outputText.value).then(() => {
+            showToast('Translation copied to clipboard!', 'info');
+        });
+    });
+
+    DOM.btnSpeak.addEventListener('click', speakText);
+
+  </script>
+</body>
+</html>
